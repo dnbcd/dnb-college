@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNB College AI Tutor</title>
+  <style>
+    :root {
+      --bg: #06070b;
+      --text: #edf3ff;
+      --muted: #9fb0d1;
+      --line: rgba(140, 173, 255, 0.16);
+      --accent: #7ce7ff;
+      --accent-2: #9b7cff;
+      --good: #8df0b2;
+      --bad: #ff9ea4;
+      --shadow: 0 18px 60px rgba(0,0,0,0.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(124,231,255,.08), transparent 25%),
+        radial-gradient(circle at 80% 20%, rgba(155,124,255,.10), transparent 25%),
+        linear-gradient(180deg, #07090f 0%, #05060a 100%);
+      color: var(--text);
+    }
+    .stars, .stars::before, .stars::after {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      content: "";
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.85), transparent 50%),
+        radial-gradient(1px 1px at 110px 80px, rgba(255,255,255,.6), transparent 50%),
+        radial-gradient(1.5px 1.5px at 220px 160px, rgba(124,231,255,.7), transparent 50%),
+        radial-gradient(1px 1px at 320px 40px, rgba(155,124,255,.7), transparent 50%);
+      background-size: 480px 260px;
+      opacity: .28;
+      animation: drift 70s linear infinite;
+    }
+    .stars::before { opacity: .16; transform: scale(1.2); animation-duration: 95s; }
+    .stars::after { opacity: .11; transform: scale(1.45); animation-duration: 120s; }
+    @keyframes drift { from { transform: translateY(0); } to { transform: translateY(-260px); } }
+
+    .wrap {
+      width: min(1220px, calc(100% - 28px));
+      margin: 24px auto 60px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero, .panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(12,16,26,.94), rgba(8,10,16,.97));
+    }
+    .hero { margin-bottom: 18px; }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr;
+      gap: 18px;
+      padding: 28px;
+    }
+    .kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(124,231,255,.08);
+      border: 1px solid rgba(124,231,255,.16);
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: .98;
+      letter-spacing: -0.04em;
+    }
+    .shine {
+      background: linear-gradient(92deg, #f7fbff 0%, #96ecff 18%, #ffffff 36%, #baa9ff 58%, #f7fbff 82%);
+      background-size: 220% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: shine 8s linear infinite;
+    }
+    @keyframes shine { to { background-position: 220% center; } }
+    .sub {
+      margin: 0;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 72ch;
+    }
+    .hero-card {
+      border: 1px solid var(--line);
+      background: rgba(10,14,22,.75);
+      border-radius: 24px;
+      padding: 18px;
+    }
+    .hero-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .hero-card ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.6; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+    }
+    .panel-head h2 { margin: 0; font-size: 18px; }
+    .panel-body { padding: 20px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+    textarea, input, select {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(143,170,245,.16);
+      background: rgba(7,10,16,.96);
+      color: var(--text);
+      padding: 14px 15px;
+      font: inherit;
+      outline: none;
+    }
+    textarea { min-height: 130px; resize: vertical; line-height: 1.5; }
+    .row {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    button {
+      border-radius: 16px;
+      padding: 12px 14px;
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      color: var(--text);
+    }
+    .primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #081018; font-weight: 800; }
+    .secondary { background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+
+    .status {
+      margin-top: 14px;
+      border-radius: 16px;
+      padding: 14px 15px;
+      line-height: 1.55;
+      font-size: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+    }
+    .status.good { border-color: rgba(141,240,178,.2); background: rgba(141,240,178,.08); color: #dffff1; }
+    .status.bad { border-color: rgba(255,158,164,.2); background: rgba(255,158,164,.08); color: #ffe2e5; }
+
+    .output { max-height: 760px; overflow: auto; padding-right: 4px; }
+    .markdown { line-height: 1.65; color: #deebff; }
+    .markdown h1, .markdown h2, .markdown h3 { color: #fff; margin-top: 20px; }
+    .markdown pre {
+      white-space: pre-wrap;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,.03);
+    }
+    .diagram {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,.02);
+    }
+    .diagram img { display: block; width: 100%; height: auto; }
+
+    @media (max-width: 980px) { .hero-inner, .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) {
+      .row { grid-template-columns: 1fr; }
+      .wrap { width: min(100% - 18px, 1200px); }
+      .hero-inner, .panel-body { padding: 16px; }
+      .panel-head { padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="kicker">DNB COLLEGE · OpenAI Tutor</div>
+          <h1><span class="shine">AI Drum & Bass Tutorial Generator</span></h1>
+          <p class="sub">
+            One-page app to generate very detailed Ableton DnB tutorials, expansion notes,
+            spoken narration script, and a matching tutorial diagram image.
+          </p>
+        </div>
+        <aside class="hero-card">
+          <h3>Included output</h3>
+          <ul>
+            <li>Long lesson markdown (your exact prompt architecture).</li>
+            <li>Companion expansion section with advanced add-ons.</li>
+            <li>Narration script for voiceover/audio format.</li>
+            <li>Relevant visual diagram from OpenAI image generation.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Tutorial request</h2>
+          <span class="kicker">Single page</span>
+        </div>
+        <div class="panel-body">
+          <label for="topic">Topic</label>
+          <textarea id="topic">Designing a dark rolling reese bassline that stays clean under heavy jungle breaks</textarea>
+
+          <div class="row">
+            <div>
+              <label for="level">Skill level</label>
+              <select id="level">
+                <option>Beginner</option>
+                <option selected>Intermediate</option>
+                <option>Advanced</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="category">Category</label>
+              <select id="category">
+                <option>Basslines</option>
+                <option>Drums</option>
+                <option>Arrangement</option>
+                <option>Mixing</option>
+                <option selected>Sound Design</option>
+                <option>FX</option>
+                <option>Workflow</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="title">Narration title</label>
+              <input id="title" value="Dark Rolling Reese Design in Ableton" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="generateBtn">Generate tutorial + image</button>
+          </div>
+
+          <div id="status" class="status">Ready.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Generated output</h2>
+          <span class="kicker">Lesson + visuals</span>
+        </div>
+        <div class="panel-body output">
+          <div id="lesson" class="markdown"></div>
+          <div id="expansion" class="markdown"></div>
+          <div id="narration" class="markdown"></div>
+          <div id="diagramWrap" class="diagram" style="display:none;">
+            <img id="diagram" alt="DnB tutorial diagram" />
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+
+    const topic = $("#topic");
+    const level = $("#level");
+    const category = $("#category");
+    const title = $("#title");
+    const generateBtn = $("#generateBtn");
+    const status = $("#status");
+
+    const lessonEl = $("#lesson");
+    const expansionEl = $("#expansion");
+    const narrationEl = $("#narration");
+
+    const diagramWrap = $("#diagramWrap");
+    const diagram = $("#diagram");
+
+    function setStatus(message, mode = "") {
+      status.className = "status" + (mode ? ` ${mode}` : "");
+      status.textContent = message;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function markdownToBasicHtml(md) {
+      const safe = escapeHtml(md);
+      return safe
+        .replace(/^# (.*)$/gm, "<h1>$1</h1>")
+        .replace(/^## (.*)$/gm, "<h2>$1</h2>")
+        .replace(/^### (.*)$/gm, "<h3>$1</h3>")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n\n/g, "</p><p>")
+        .replace(/\n/g, "<br>")
+        .replace(/^<h([1-3])>/gm, "</p><h$1>")
+        .replace(/<\/h([1-3])><br>/gm, "</h$1><p>");
+    }
+
+    async function generateTutorial() {
+      try {
+        setStatus("Generating detailed tutorial, expansion, narration, and image…");
+        lessonEl.innerHTML = "";
+        expansionEl.innerHTML = "";
+        narrationEl.innerHTML = "";
+        diagramWrap.style.display = "none";
+
+        const response = await fetch("/api/tutorial", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            topic: topic.value.trim(),
+            level: level.value,
+            category: category.value,
+            title: title.value.trim()
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Request failed");
+
+        lessonEl.innerHTML = `<h2>Main Lesson</h2><p>${markdownToBasicHtml(data.lessonMarkdown)}</p>`;
+        expansionEl.innerHTML = `<h2>Expansion</h2><p>${markdownToBasicHtml(data.expansionMarkdown)}</p>`;
+        narrationEl.innerHTML = `<h2>Narration Script</h2><p>${escapeHtml(data.narrationScript).replace(/\n/g, "<br>")}</p>`;
+
+        if (data.imageBase64) {
+          diagram.src = `data:image/png;base64,${data.imageBase64}`;
+          diagramWrap.style.display = "block";
+        }
+
+        setStatus("Done. Tutorial + image generated.", "good");
+      } catch (error) {
+        console.error(error);
+        setStatus(error.message || "Generation failed", "bad");
+      }
+    }
+
+    generateBtn.addEventListener("click", generateTutorial);
+  </script>
+</body>
+</html>
