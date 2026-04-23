@@ -1,1 +1,180 @@
-...paste full new index.html...
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNB College AI Tutor V2</title>
+  <style>
+    :root { --bg:#06070b; --text:#edf3ff; --muted:#9fb0d1; --line:rgba(140,173,255,.16); --accent:#7ce7ff; --accent-2:#9b7cff; --good:#8df0b2; --bad:#ff9ea4; --shadow:0 18px 60px rgba(0,0,0,.45);}*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:radial-gradient(circle at 20% 10%,rgba(124,231,255,.08),transparent 25%),radial-gradient(circle at 80% 20%,rgba(155,124,255,.10),transparent 25%),linear-gradient(180deg,#07090f 0%,#05060a 100%);color:var(--text)}
+    .stars,.stars::before,.stars::after{position:fixed;inset:0;pointer-events:none;content:"";background-image:radial-gradient(2px 2px at 20px 30px,rgba(255,255,255,.85),transparent 50%),radial-gradient(1px 1px at 110px 80px,rgba(255,255,255,.6),transparent 50%),radial-gradient(1.5px 1.5px at 220px 160px,rgba(124,231,255,.7),transparent 50%),radial-gradient(1px 1px at 320px 40px,rgba(155,124,255,.7),transparent 50%);background-size:480px 260px;opacity:.28;animation:drift 70s linear infinite}.stars::before{opacity:.16;transform:scale(1.2);animation-duration:95s}.stars::after{opacity:.11;transform:scale(1.45);animation-duration:120s}@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-260px)}}
+    .wrap{width:min(1240px,calc(100% - 28px));margin:24px auto 60px;position:relative;z-index:1}.hero,.panel{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;background:linear-gradient(180deg,rgba(12,16,26,.94),rgba(8,10,16,.97))}.hero{margin-bottom:18px}.hero-inner{display:grid;grid-template-columns:1.2fr .9fr;gap:18px;padding:28px}
+    .kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;color:var(--accent);background:rgba(124,231,255,.08);border:1px solid rgba(124,231,255,.16);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    h1{margin:14px 0 10px;font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-.04em}.shine{background:linear-gradient(92deg,#f7fbff 0%,#96ecff 18%,#fff 36%,#baa9ff 58%,#f7fbff 82%);background-size:220% auto;color:transparent;-webkit-background-clip:text;background-clip:text;animation:shine 8s linear infinite}@keyframes shine{to{background-position:220% center}}.sub{margin:0;font-size:16px;color:var(--muted);line-height:1.6}
+    .hero-card{border:1px solid var(--line);background:rgba(10,14,22,.75);border-radius:24px;padding:18px}.hero-card h3{margin:0 0 10px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}.hero-card ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}.panel-body{padding:20px}
+    label{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 10px;font-weight:700}textarea,input,select{width:100%;border-radius:16px;border:1px solid rgba(143,170,245,.16);background:rgba(7,10,16,.96);color:var(--text);padding:14px 15px;font:inherit;outline:none}
+    textarea{min-height:120px;resize:vertical;line-height:1.5}.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button,.btn{border-radius:16px;padding:12px 14px;font:inherit;cursor:pointer;border:0;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#081018;font-weight:800}.secondary{background:rgba(255,255,255,.05);border:1px solid var(--line)}
+    .status{margin-top:14px;border-radius:16px;padding:14px 15px;line-height:1.55;font-size:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted)}.status.good{border-color:rgba(141,240,178,.2);background:rgba(141,240,178,.08);color:#dffff1}.status.bad{border-color:rgba(255,158,164,.2);background:rgba(255,158,164,.08);color:#ffe2e5}
+    .output{max-height:780px;overflow:auto;padding-right:6px}.markdown{line-height:1.65;color:#deebff}.markdown h1,.markdown h2,.markdown h3{color:#fff}.markdown pre{overflow:auto;background:rgba(255,255,255,.03);padding:10px;border-radius:12px;border:1px solid var(--line)}.markdown blockquote{border-left:3px solid var(--accent);margin:0;padding-left:10px;color:#cbe3ff}
+    .diagram{margin-top:14px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02)}.diagram img{display:block;width:100%;height:auto}
+    .chat{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.chat-log{display:grid;gap:10px;margin-top:10px}.bubble{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.03)}.bubble.user{border-color:rgba(124,231,255,.24)}
+    @media (max-width:980px){.hero-inner,.grid{grid-template-columns:1fr}}@media (max-width:700px){.row{grid-template-columns:1fr}.wrap{width:min(100% - 18px,1200px)}.hero-inner,.panel-body{padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="wrap">
+    <section class="hero"><div class="hero-inner"><div><div class="kicker">DNB COLLEGE · V2</div><h1><span class="shine">Multi-Turn AI DnB Tutor + Images</span></h1><p class="sub">Now with session memory chat, proper markdown rendering, download buttons for lesson/narration, and safer API handling with retry + rate limiting server-side.</p></div><aside class="hero-card"><h3>V2 upgrades</h3><ul><li>Real multi-turn follow-up via session-backed <code>/api/chat</code></li><li><code>marked</code> + <code>DOMPurify</code> markdown rendering</li><li>Download generated lesson + narration as <code>.md</code></li><li>Handles retries and server-side rate limiting</li></ul></aside></div></section>
+
+    <div class="grid">
+      <section class="panel"><div class="panel-head"><h2>Tutorial request</h2><span class="kicker">OpenAI API</span></div><div class="panel-body">
+        <label for="topic">Topic</label><textarea id="topic">Designing a dark rolling reese bassline that stays clean with heavy drums</textarea>
+        <div class="row">
+          <div><label for="level">Skill level</label><select id="level"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></div>
+          <div><label for="category">Category</label><select id="category"><option>Basslines</option><option>Drums</option><option>Arrangement</option><option>Mixing</option><option selected>Sound Design</option><option>FX</option><option>Workflow</option></select></div>
+          <div><label for="chatInput">Follow-up question</label><input id="chatInput" placeholder="e.g. give me a version with less 200Hz mud" /></div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="generateBtn">Generate tutorial + image</button>
+          <button class="secondary" id="followUpBtn">Send follow-up</button>
+          <a class="btn secondary" id="downloadLessonBtn" download="lesson.md" style="display:none;">Download lesson .md</a>
+          <a class="btn secondary" id="downloadNarrationBtn" download="narration.md" style="display:none;">Download narration .md</a>
+        </div>
+        <div id="status" class="status">Ready.</div>
+
+        <div class="chat">
+          <label>Chat memory log</label>
+          <div id="chatLog" class="chat-log"></div>
+        </div>
+      </div></section>
+
+      <section class="panel"><div class="panel-head"><h2>Generated lesson</h2><span class="kicker">Markdown + image</span></div><div class="panel-body output">
+        <div id="lesson" class="markdown"></div>
+        <div id="diagramWrap" class="diagram" style="display:none;"><img id="diagram" alt="DnB tutorial diagram" /></div>
+      </div></section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const topic = $("#topic");
+    const level = $("#level");
+    const category = $("#category");
+    const chatInput = $("#chatInput");
+    const lessonEl = $("#lesson");
+    const diagramWrap = $("#diagramWrap");
+    const diagram = $("#diagram");
+    const status = $("#status");
+    const chatLog = $("#chatLog");
+    const downloadLessonBtn = $("#downloadLessonBtn");
+    const downloadNarrationBtn = $("#downloadNarrationBtn");
+
+    let sessionId = "";
+    let lessonMarkdown = "";
+    let expansionMarkdown = "";
+    let narrationScript = "";
+
+    function setStatus(msg, mode = "") {
+      status.className = "status" + (mode ? ` ${mode}` : "");
+      status.textContent = msg;
+    }
+
+    function renderMarkdown(md) {
+      const raw = marked.parse(md || "");
+      return DOMPurify.sanitize(raw);
+    }
+
+    function addChatBubble(role, markdownText) {
+      const div = document.createElement("div");
+      div.className = `bubble ${role}`;
+      div.innerHTML = role === "assistant" ? renderMarkdown(markdownText) : DOMPurify.sanitize(markdownText);
+      chatLog.appendChild(div);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function makeDownloadLink(el, filename, text) {
+      const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      el.href = url;
+      el.download = filename;
+      el.style.display = "inline-flex";
+    }
+
+    async function generate() {
+      try {
+        setStatus("Generating detailed lesson and diagram…");
+        lessonEl.innerHTML = "";
+        diagramWrap.style.display = "none";
+        chatLog.innerHTML = "";
+        downloadLessonBtn.style.display = "none";
+        downloadNarrationBtn.style.display = "none";
+
+        const r = await fetch("/api/tutorial", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic: topic.value.trim(), level: level.value, category: category.value })
+        });
+
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Generation failed");
+
+        sessionId = data.sessionId;
+        lessonMarkdown = data.lessonMarkdown || "";
+        expansionMarkdown = data.expansionMarkdown || "";
+        narrationScript = data.narrationScript || "";
+
+        const merged = `${lessonMarkdown}\n\n---\n\n${expansionMarkdown}`;
+        lessonEl.innerHTML = renderMarkdown(merged);
+
+        if (data.imageBase64) {
+          diagram.src = `data:image/png;base64,${data.imageBase64}`;
+          diagramWrap.style.display = "block";
+        }
+
+        makeDownloadLink(downloadLessonBtn, "dnb-lesson.md", merged);
+        makeDownloadLink(downloadNarrationBtn, "dnb-narration.md", narrationScript);
+
+        addChatBubble("assistant", "### Session ready\nAsk follow-up questions and I'll keep context from this tutorial.");
+        setStatus("Tutorial generated. Chat memory active.", "good");
+      } catch (e) {
+        console.error(e);
+        setStatus(e.message, "bad");
+      }
+    }
+
+    async function followUp() {
+      try {
+        if (!sessionId) return setStatus("Generate tutorial first.", "bad");
+        const ask = chatInput.value.trim();
+        if (!ask) return setStatus("Write a follow-up question.", "bad");
+
+        addChatBubble("user", ask);
+        chatInput.value = "";
+        setStatus("Sending follow-up…");
+
+        const r = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, message: ask })
+        });
+
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Follow-up failed");
+
+        addChatBubble("assistant", data.answer || "No response.");
+        setStatus("Follow-up answered.", "good");
+      } catch (e) {
+        console.error(e);
+        setStatus(e.message, "bad");
+      }
+    }
+
+    $("#generateBtn").addEventListener("click", generate);
+    $("#followUpBtn").addEventListener("click", followUp);
+  </script>
+</body>
+</html>
+server.js
