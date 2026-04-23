@@ -6,7 +6,7 @@ import OpenAI from "openai";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3007;
 
 if (!process.env.OPENAI_API_KEY) {
   console.warn("Missing OPENAI_API_KEY. Set it in a .env file or environment.");
